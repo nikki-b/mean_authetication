@@ -49,6 +49,8 @@ module.exports = function(app, passport) {
     res.redirect('/');
   });
 
+  // START SOCIAL AUTHS ---------------------
+
   // FACEBOOK
   app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
   // handle the callback after facebook has authenticated the user
@@ -61,7 +63,6 @@ module.exports = function(app, passport) {
 
   // TWITTER
   app.get('/auth/twitter', passport.authenticate('twitter'));
-
   // handle the callback after twitter has authenticated the user
   app.get('/auth/twitter/callback',
     passport.authenticate('twitter', {
@@ -69,6 +70,18 @@ module.exports = function(app, passport) {
       failureRedirect : '/'
     })
   );
+
+  // GOOGLE
+  app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+  // the callback after google has authenticated the user
+  app.get('/auth/google/callback',
+    passport.authenticate('google', {
+      successRedirect : '/profile',
+      failureRedirect : '/'
+    })
+  );
+
+
 }; // end of routes
 
 // route middleware to make sure a user is logged in

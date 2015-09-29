@@ -36,3 +36,4 @@ The secret IDs and Keys are provided by the developer consoles for each service.
 Facebook: http://developers.facebook.com
 Twitter: http://apps.twitter.com
 Google: https://developers.google.com/identity/sign-in/web/devconsole-project
+(Make sure that you also enable the Google+ API for Google login.)

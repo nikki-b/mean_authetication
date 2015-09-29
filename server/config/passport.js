@@ -1,6 +1,7 @@
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy  = require('passport-twitter').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var mongoose = require('mongoose');
 var User = mongoose.model("User");
@@ -28,36 +29,36 @@ module.exports = function(passport) {
       usernameField : 'email',
       passwordField : 'password',
       passReqToCallback : true
-  },
-  function(req, email, password, done) {
-    // asynchronous
-    // User.findOne wont fire unless data is sent back
-    process.nextTick(function() {
-      // find a user with matching email
-      User.findOne({ 'local.email' :  email }, function(err, user) {
-        // if there are any errors, return the error
-        if (err)
-          return done(err);
-        // user already exists
-        if (user) {
-          return done(null, false, req.flash('registerMessage', 'That email is already taken.'));
-        } 
-        else { // if there is no user with that email
-          // create the user
-          var newUser = new User();
-          // set the user's local credentials
-          newUser.local.email = email;
-          newUser.local.password = newUser.generateHash(password);
-          // save the user
-          newUser.save(function(err) {
-              if (err)
-                  throw err;
-              return done(null, newUser);
-          });
-        }
-      }); // end of User.findOne    
-    }); // end of process.nextTick
-  } // end of anon function
+    },
+    function(req, email, password, done) {
+      // asynchronous
+      // User.findOne wont fire unless data is sent back
+      process.nextTick(function() {
+        // find a user with matching email
+        User.findOne({ 'local.email' :  email }, function(err, user) {
+          // if there are any errors, return the error
+          if (err)
+            return done(err);
+          // user already exists
+          if (user) {
+            return done(null, false, req.flash('registerMessage', 'That email is already taken.'));
+          } 
+          else { // if there is no user with that email
+            // create the user
+            var newUser = new User();
+            // set the user's local credentials
+            newUser.local.email = email;
+            newUser.local.password = newUser.generateHash(password);
+            // save the user
+            newUser.save(function(err) {
+                if (err)
+                    throw err;
+                return done(null, newUser);
+            }); // end of save
+          } // end of else
+        }); // end of User.findOne    
+      }); // end of process.nextTick
+    } // end of anon function
   )); // end of local-register
 
   // LOCAL - LOGIN ---------------------------------------
@@ -136,35 +137,64 @@ module.exports = function(passport) {
     consumerKey     : configAuth.twitterAuth.consumerKey,
     consumerSecret  : configAuth.twitterAuth.consumerSecret,
     callbackURL     : configAuth.twitterAuth.callbackURL
-  },
-  function(token, tokenSecret, profile, done) {
-    process.nextTick(function() {
-      User.findOne({ 'twitter.id' : profile.id }, function(err, user) {
-        if (err)
-          return done(err);
-        if (user) {
-          return done(null, user); // user found, return that user
-        } 
-        else {
-          // if there is no user, create them
-          var newUser = new User();
-          newUser.twitter.id          = profile.id;
-          newUser.twitter.token       = token;
-          newUser.twitter.username    = profile.username;
-          newUser.twitter.displayName = profile.displayName;
+    },
+    function(token, tokenSecret, profile, done) {
+      process.nextTick(function() {
+        User.findOne({ 'twitter.id' : profile.id }, function(err, user) {
+          if (err)
+            return done(err);
+          if (user) {
+            return done(null, user); // user found, return that user
+          } 
+          else {
+            // if there is no user, create them
+            var newUser = new User();
+            newUser.twitter.id          = profile.id;
+            newUser.twitter.token       = token;
+            newUser.twitter.username    = profile.username;
+            newUser.twitter.displayName = profile.displayName;
 
-          newUser.save(function(err) {
-            if (err)
-              throw err;
-            return done(null, newUser);
-          }); // end of save function
-        } // end of else
-      }); // end of User.findOne
-    }); // end of process.nextTick
-  } // end of anon function
-)); // end of twitter strategy
+            newUser.save(function(err) {
+              if (err)
+                throw err;
+              return done(null, newUser);
+            }); // end of save function
+          } // end of else
+        }); // end of User.findOne
+      }); // end of process.nextTick
+    } // end of anon function
+  )); // end of twitter strategy
 
-
-
+  // GOOGLE  LOGIN -------------------------
+  passport.use(new GoogleStrategy({
+    clientID        : configAuth.googleAuth.clientID,
+    clientSecret    : configAuth.googleAuth.clientSecret,
+    callbackURL     : configAuth.googleAuth.callbackURL,
+    },
+    function(token, refreshToken, profile, done) {
+      process.nextTick(function() {
+        User.findOne({ 'google.id' : profile.id }, function(err, user) {
+          if (err)
+            return done(err);
+          if (user) {
+            // if a user is found, log them in
+            return done(null, user);
+          } 
+          else {
+            var newUser = new User();
+            newUser.google.id    = profile.id;
+            newUser.google.token = token;
+            newUser.google.name  = profile.displayName;
+            newUser.google.email = profile.emails[0].value; // pull the first email
+            newUser.save(function(err) {
+              if (err)
+                throw err;
+              return done(null, newUser);
+            }); // end of save
+          } // end of else
+        }); // end of User.findOne
+      }); // end of process.nextTick
+    } // end on anon function
+  )); // end of google strategy
 
 }; // end of module object
