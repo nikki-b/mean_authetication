@@ -3,7 +3,8 @@
 Modified from https://scotch.io/tutorials/easy-node-authentication-setup-and-local.
 For a detailed step-by-step, follow the scotch.io tutorial.
 
-My version will use local, Facebook, Twitter, and Google login/reg - with the full MEAN stack (including the AngularJS part). The file structure will NOT match the scotch tutorial as I have modified it quite a bit while building.
+This version will use local, Facebook, Twitter, and Google login/reg - with the full MEAN stack (including the AngularJS part). The file structure will NOT match the scotch tutorial as I have modified it quite a bit while building.
+###Current Status: Integrating Angular. All logins working, accounts can be linked/unlinked.
 
 ##Don't forget the auth.js file!
 
@@ -30,7 +31,7 @@ module.exports = {
 };
 ```
 
-The secret IDs and Keys are provided by the developer consoles for each service.
+The secret IDs/keys/etc are provided by the developer consoles for each service.
 
 ##Developer Consoles
 Facebook: http://developers.facebook.com
