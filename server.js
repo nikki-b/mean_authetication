@@ -9,12 +9,11 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var configDB = require('./config/database.js');
+var configDB = require('./server/config/mongoose.js');
 
 // configuration
-mongoose.connect(configDB.url);
-
-// require('./config/passport')(passport);
+require('./server/config/mongoose.js');
+require('./server/config/passport')(passport);
 
 // set up express
 app.use(morgan('dev')); // logging requests
@@ -29,7 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-require('./config/routes.js')(app, passport);
+require('./server/config/routes.js')(app, passport);
 
 app.listen(port);
-console.log("We are listening on port")
+console.log("We are listening on port " + port + "! :)");

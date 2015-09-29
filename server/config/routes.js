@@ -13,7 +13,11 @@ module.exports = function(app, passport) {
     });
 
     // LOGIN - process form
-    // app.post('/login', do all our passport stuff here);
+    app.post('/login', passport.authenticate('local-login', {
+        successRedirect : '/profile', // success
+        failureRedirect : '/login', // error
+        failureFlash : true // allow flash messages
+    }));
 
     // REGISTER - display form
     app.get('/register', function(req, res) {
@@ -22,7 +26,11 @@ module.exports = function(app, passport) {
     });
 
     // REGISTER - process form
-    // app.post('/signup', do all our passport stuff here);
+    app.post('/register', passport.authenticate('local-register', {
+        successRedirect : '/profile', // success
+        failureRedirect : '/register', // error
+        failureFlash : true // allow flash messages
+    }));
 
     // PROFILE (must be logged in)
     app.get('/profile', isLoggedIn, function(req, res) {
