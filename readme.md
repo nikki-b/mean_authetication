@@ -9,8 +9,8 @@ My version will use local, Facebook, Twitter, and Google login/reg - with the fu
 
 Create a file, auth.js, in the server/config folder.
 Here is the template for it:
----------------------------------------------
-module.exports = {
+
+```module.exports = {
   'facebookAuth' : {
     'clientID'      : 'your-secret-clientID-here', 
     'clientSecret'  : 'your-client-secret-here',
@@ -26,8 +26,7 @@ module.exports = {
     'clientSecret'  : 'your-client-secret-here',
     'callbackURL'   : 'http://localhost:8888/auth/google/callback'
   }
-};
----------------------------------------------
+};```
 
 The secret IDs and Keys are provided by the developer consoles for each service.
 
