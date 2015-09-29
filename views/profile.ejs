@@ -19,7 +19,7 @@
       <a href="/logout" class="btn btn-default btn-sm">Logout</a>
     </div>
     <div class="row">
-      <!-- USER'S LOCAL INFORMATION -->
+      <!-- LOCAL INFORMATION -->
       <div class="col-sm-6">
         <div class="well">
           <h3><span class="fa fa-user"></span> Local</h3>
@@ -39,6 +39,20 @@
             <strong>token</strong>: <%= user.facebook.token %><br>
             <strong>email</strong>: <%= user.facebook.email %><br>
             <strong>name</strong>: <%= user.facebook.name %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <!-- TWITTER INFORMATION -->
+      <div class="col-sm-6">
+        <div class="well">
+          <h3 class="text-info"><span class="fa fa-twitter"></span> Twitter</h3>
+          <p>
+            <strong>id</strong>: <%= user.twitter.id %><br>
+            <strong>token</strong>: <%= user.twitter.token %><br>
+            <strong>username</strong>: <%= user.twitter.username %><br>
+            <strong>displayName</strong>: <%= user.twitter.displayName %>
           </p>
         </div>
       </div>

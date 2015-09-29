@@ -1,5 +1,7 @@
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var TwitterStrategy  = require('passport-twitter').Strategy;
+
 var mongoose = require('mongoose');
 var User = mongoose.model("User");
 var configAuth = require('./auth');
@@ -19,7 +21,7 @@ module.exports = function(passport) {
       });
   });
 
-  // LOCAL - REGISTER
+  // LOCAL - REGISTER ----------------------------------
   passport.use('local-register', new LocalStrategy({
       // by default, local strategy uses username and password,
       // we will override with email
@@ -58,7 +60,7 @@ module.exports = function(passport) {
   } // end of anon function
   )); // end of local-register
 
-  // LOCAL - LOGIN
+  // LOCAL - LOGIN ---------------------------------------
   passport.use('local-login', new LocalStrategy({
       // by default, local strategy uses username and password,
       // we will override with email
@@ -85,7 +87,7 @@ module.exports = function(passport) {
     } // end of anon function
   )) // end of local-login
 
-  // FACEBOOK - LOGIN
+  // FACEBOOK - LOGIN ------------------------------------------
   passport.use(new FacebookStrategy({
       // pull in our app id and secret from our auth.js file
       clientID        : configAuth.facebookAuth.clientID,
@@ -128,4 +130,41 @@ module.exports = function(passport) {
       }); // end of process.nextTick
     } // end of anon function
   )); // end of facebook strategy
+
+  // TWITTER LOGIN ------------------------------
+  passport.use(new TwitterStrategy({
+    consumerKey     : configAuth.twitterAuth.consumerKey,
+    consumerSecret  : configAuth.twitterAuth.consumerSecret,
+    callbackURL     : configAuth.twitterAuth.callbackURL
+  },
+  function(token, tokenSecret, profile, done) {
+    process.nextTick(function() {
+      User.findOne({ 'twitter.id' : profile.id }, function(err, user) {
+        if (err)
+          return done(err);
+        if (user) {
+          return done(null, user); // user found, return that user
+        } 
+        else {
+          // if there is no user, create them
+          var newUser = new User();
+          newUser.twitter.id          = profile.id;
+          newUser.twitter.token       = token;
+          newUser.twitter.username    = profile.username;
+          newUser.twitter.displayName = profile.displayName;
+
+          newUser.save(function(err) {
+            if (err)
+              throw err;
+            return done(null, newUser);
+          }); // end of save function
+        } // end of else
+      }); // end of User.findOne
+    }); // end of process.nextTick
+  } // end of anon function
+)); // end of twitter strategy
+
+
+
+
 }; // end of module object
